@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import moment from "moment";
 
 import {
@@ -8,6 +8,10 @@ import {
   LogoutBtn,
   MainContent,
   ChatItem,
+  ChatUserFlex,
+  ChatItemFlex,
+  UserAvatar,
+  ChatTime,
   ChatUser,
   ChatMessage,
   ChatInputContainer,
@@ -31,6 +35,7 @@ const Home = (props) => {
   const [localUser, SetLocalUser] = useState({});
   const [messagesList, setmessagesList] = useState([]);
   const [renderEmojiContainer, setRenderEmojiContainer] = useState(false);
+  const chatContainerRef = useRef(null);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -38,6 +43,7 @@ const Home = (props) => {
     const msgData = {
       sender: localUser.name,
       message: userInput,
+      avatar: localUser.avatarImg,
       time: moment().format("hh:mm a"),
     };
 
@@ -51,10 +57,18 @@ const Home = (props) => {
     };
 
     socket.on("messenger", handleNewMessage);
+
     return () => {
       socket.off("messenger", handleNewMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messagesList]);
 
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("WeChatUser"));
@@ -75,14 +89,24 @@ const Home = (props) => {
           <FiLogOut />
         </LogoutBtn>
       </Navigation>
-      <MainContent onClick={() => setRenderEmojiContainer(false)}>
+      <MainContent
+        ref={chatContainerRef}
+        onClick={() => setRenderEmojiContainer(false)}
+      >
         {messagesList.map((eachMessage, index) => {
           const sender = eachMessage.sender === localUser.name;
 
           return (
             <ChatItem key={index}>
-              <ChatUser sender={sender}>{eachMessage.sender}</ChatUser>
-              <ChatMessage sender={sender}>{eachMessage.message}</ChatMessage>
+              <ChatUserFlex>
+                <UserAvatar src={eachMessage.avatar} />
+                <ChatTime>{eachMessage.time}</ChatTime>
+              </ChatUserFlex>
+
+              <ChatItemFlex>
+                <ChatUser sender={sender}>{eachMessage.sender}</ChatUser>
+                <ChatMessage sender={sender}>{eachMessage.message}</ChatMessage>
+              </ChatItemFlex>
             </ChatItem>
           );
         })}

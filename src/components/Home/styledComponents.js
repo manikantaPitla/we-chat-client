@@ -42,19 +42,43 @@ export const MainContent = styled.main`
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  overflow-y: auto;
+  /* max-height: 80vh; */
 `;
 
 export const ChatItem = styled.div`
   display: flex;
+  gap: 10px;
+  align-items: flex-start;
+`;
+export const ChatItemFlex = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+export const ChatUserFlex = styled.div`
+  display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-shrink: 0;
+`;
+
+export const ChatTime = styled.span`
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
 `;
 
 export const ChatUser = styled.span`
   font-size: 12px;
   font-weight: 500;
   color: ${(props) => (props.sender ? "#e81cff" : "#40c9ff")};
+`;
+
+export const UserAvatar = styled.img`
+  width: 30px;
 `;
 
 export const ChatMessage = styled.p`
