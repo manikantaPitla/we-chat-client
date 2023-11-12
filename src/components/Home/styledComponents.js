@@ -24,6 +24,12 @@ export const Heading = styled.h1`
     font-size: 20px;
   }
 `;
+export const RoomIdContainer = styled.p`
+  font-weight: 500;
+  font-size: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 5px;
+`;
 
 export const LogoutBtn = styled.button`
   border: none;
@@ -85,7 +91,7 @@ export const ChatMessage = styled.p`
   font-size: 12px;
   font-weight: 500;
   border-left: 2px solid ${(props) => (props.sender ? "#e81cff" : "#40c9ff")};
-  padding: 2px 10px;
+  padding: 4px 10px;
 `;
 
 export const ChatInputContainer = styled.form`

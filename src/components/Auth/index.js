@@ -8,6 +8,8 @@ import "reactjs-popup/dist/index.css";
 import MultipleAvatars from "../MultipleAvatars";
 import noUser from "../../images/no_user.png";
 
+import { v4 } from "uuid";
+
 import {
   Main,
   Card,
@@ -29,11 +31,12 @@ const toastSettings = {
 };
 
 const Auth = (props) => {
-  const [name, setName] = useState("");
+  const [authData, setAuthData] = useState({ name: "", room: "" });
+
   const [avatar, setAvatar] = useState(noUser);
 
   const handleFormData = (e) => {
-    setName(e.target.value);
+    setAuthData({ ...authData, [e.target.name]: e.target.value });
   };
 
   const setSelectedAvatar = (image) => {
@@ -44,12 +47,16 @@ const Auth = (props) => {
     e.preventDefault();
     if (avatar === noUser) {
       return toast.error("Avatar Required!", { ...toastSettings });
-    } else if (!name) {
+    } else if (!authData.name) {
       return toast.error("Name Required!", { ...toastSettings });
+    } else if (!authData.room) {
+      return toast.error("Rooom ID Required!", { ...toastSettings });
     }
 
     const userData = {
-      name: name,
+      id: v4(),
+      room: authData.room,
+      name: authData.name,
       avatarImg: avatar,
     };
 
@@ -84,7 +91,9 @@ const Auth = (props) => {
     <Main>
       <Card>
         <Heading>We Chat</Heading>
-        <NoUserImg src={avatar} alt="avatar" />
+        <NoUserImg>
+          <img src={avatar} alt="avatar" />
+        </NoUserImg>
 
         {changeAvatarPopup()}
 
@@ -93,9 +102,17 @@ const Auth = (props) => {
             type="text"
             placeholder="Enter your name"
             onChange={handleFormData}
-            value={name}
+            name="name"
+            value={authData.name}
           />
-          <FormBtn type="submit">Enter</FormBtn>
+          <Input
+            type="text"
+            placeholder="Enter room ID"
+            onChange={handleFormData}
+            name="room"
+            value={authData.room}
+          />
+          <FormBtn type="submit">Enter Room</FormBtn>
         </Form>
       </Card>
       <ToastContainer {...toastSettings} />

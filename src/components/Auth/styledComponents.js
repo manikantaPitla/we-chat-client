@@ -91,7 +91,6 @@ export const AvatarContainer = styled.button`
   font-weight: 500;
   margin: 10px 0px;
   color: #e81cff;
-
   border: none;
   outline: none;
   background-color: transparent;
@@ -101,8 +100,13 @@ export const AvatarContainer = styled.button`
   }
 `;
 
-export const NoUserImg = styled.img`
+export const NoUserImg = styled.div`
   width: 70px;
+  height: 70px;
+
+  img {
+    width: 100%;
+  }
 `;
 
 export const PopUpBody = styled.div`

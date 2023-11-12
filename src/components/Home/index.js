@@ -5,6 +5,7 @@ import {
   HomeContainer,
   Navigation,
   Heading,
+  RoomIdContainer,
   LogoutBtn,
   MainContent,
   ChatItem,
@@ -28,7 +29,8 @@ import { FaRegLaugh } from "react-icons/fa";
 import Picker from "emoji-picker-react";
 
 import { io } from "socket.io-client";
-const socket = io("https://we-chat-server-orqr.onrender.com/");
+
+let socket;
 
 const Home = (props) => {
   const [userInput, setUserInput] = useState("");
@@ -36,6 +38,43 @@ const Home = (props) => {
   const [messagesList, setmessagesList] = useState([]);
   const [renderEmojiContainer, setRenderEmojiContainer] = useState(false);
   const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const localUserData = JSON.parse(localStorage.getItem("WeChatUser"));
+    SetLocalUser(localUserData);
+  }, []);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messagesList]);
+
+  useEffect(() => {
+    if (localUser.room) {
+      socket = io("https://we-chat-server-rev3.onrender.com/");
+
+      socket.emit("joinRoom", { name: localUser.name, room: localUser.room });
+
+      socket.on("userConnected", (payload) => {
+        console.log(payload);
+      });
+
+      socket.on("userDisconnected", (payload) => {
+        console.log(payload);
+      });
+
+      socket.on("messenger", (newMessage) => {
+        console.log(newMessage);
+        setmessagesList((prevMessages) => [...prevMessages, newMessage]);
+      });
+
+      return () => {
+        socket.off();
+      };
+    }
+  }, [localUser]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -47,38 +86,19 @@ const Home = (props) => {
       time: moment().format("hh:mm a"),
     };
 
-    socket.emit("messenger", msgData);
-    setUserInput("");
-  };
-
-  useEffect(() => {
-    const handleNewMessage = (newMessage) => {
-      setmessagesList((prevMessages) => [...prevMessages, newMessage]);
-    };
-
-    socket.on("messenger", handleNewMessage);
-
-    return () => {
-      socket.off("messenger", handleNewMessage);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+    if (userInput) {
+      socket.emit("messenger", msgData);
+      setUserInput("");
     }
-  }, [messagesList]);
 
-  useEffect(() => {
-    const localUser = JSON.parse(localStorage.getItem("WeChatUser"));
-    SetLocalUser(localUser);
-  }, [SetLocalUser]);
+    setRenderEmojiContainer(false);
+  };
 
   return (
     <HomeContainer>
       <Navigation>
         <Heading>We Chat</Heading>
+        <RoomIdContainer>Room: {localUser.room}</RoomIdContainer>
         <LogoutBtn
           title="Log out"
           onClick={() => {
@@ -104,7 +124,9 @@ const Home = (props) => {
               </ChatUserFlex>
 
               <ChatItemFlex>
-                <ChatUser sender={sender}>{eachMessage.sender}</ChatUser>
+                <ChatUser sender={sender}>
+                  {sender ? "You" : eachMessage.sender}
+                </ChatUser>
                 <ChatMessage sender={sender}>{eachMessage.message}</ChatMessage>
               </ChatItemFlex>
             </ChatItem>
@@ -115,7 +137,10 @@ const Home = (props) => {
         {renderEmojiContainer && (
           <EmojiContainer>
             <Picker
+              lazyLoadEmojis={true}
               searchDisabled={true}
+              previewConfig={{ showPreview: false }}
+              suggestedEmojisMode="recent"
               width={300}
               height={400}
               onEmojiClick={(emoji) =>
