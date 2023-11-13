@@ -58,6 +58,7 @@ button {
 
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -74,6 +75,10 @@ button {
 @media screen and (max-width: 768px) {
   .popup-content {
     width: 90% !important;
+  }
+
+  ::-webkit-scrollbar {
+    height: 2px;
   }
 }
 
