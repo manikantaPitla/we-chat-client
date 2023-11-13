@@ -9,6 +9,7 @@ import {
   LogoutBtn,
   MainContent,
   ChatItem,
+  GreetMessage,
   ChatUserFlex,
   ChatItemFlex,
   UserAvatar,
@@ -58,15 +59,14 @@ const Home = (props) => {
       socket.emit("joinRoom", { name: localUser.name, room: localUser.room });
 
       socket.on("userConnected", (payload) => {
-        console.log(payload);
+        setmessagesList((prevMessages) => [...prevMessages, payload]);
       });
 
       socket.on("userDisconnected", (payload) => {
-        console.log(payload);
+        setmessagesList((prevMessages) => [...prevMessages, payload]);
       });
 
       socket.on("messenger", (newMessage) => {
-        console.log(newMessage);
         setmessagesList((prevMessages) => [...prevMessages, newMessage]);
       });
 
@@ -115,20 +115,26 @@ const Home = (props) => {
       >
         {messagesList.map((eachMessage, index) => {
           const sender = eachMessage.sender === localUser.name;
-
           return (
             <ChatItem key={index}>
-              <ChatUserFlex>
-                <UserAvatar src={eachMessage.avatar} />
-                <ChatTime>{eachMessage.time}</ChatTime>
-              </ChatUserFlex>
-
-              <ChatItemFlex>
-                <ChatUser sender={sender}>
-                  {sender ? "You" : eachMessage.sender}
-                </ChatUser>
-                <ChatMessage sender={sender}>{eachMessage.message}</ChatMessage>
-              </ChatItemFlex>
+              {eachMessage.sender === "server" ? (
+                <GreetMessage key={index}>{eachMessage.message}</GreetMessage>
+              ) : (
+                <>
+                  <ChatUserFlex>
+                    <UserAvatar src={eachMessage.avatar} />
+                    <ChatTime>{eachMessage.time}</ChatTime>
+                  </ChatUserFlex>
+                  <ChatItemFlex>
+                    <ChatUser sender={sender}>
+                      {sender ? "You" : eachMessage.sender}
+                    </ChatUser>
+                    <ChatMessage sender={sender}>
+                      {eachMessage.message}
+                    </ChatMessage>
+                  </ChatItemFlex>
+                </>
+              )}
             </ChatItem>
           );
         })}

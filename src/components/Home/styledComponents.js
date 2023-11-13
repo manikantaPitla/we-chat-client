@@ -50,7 +50,17 @@ export const MainContent = styled.main`
   flex-direction: column;
   gap: 15px;
   overflow-y: auto;
-  /* max-height: 80vh; */
+`;
+
+export const GreetMessage = styled.p`
+  font-size: 10px;
+  background-color: rgba(0, 0, 0, 0.4);
+  width: fit-content;
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 50px;
+  align-self: center;
+  margin: auto;
 `;
 
 export const ChatItem = styled.div`
