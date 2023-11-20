@@ -122,6 +122,7 @@ const Home = (props) => {
           <NavButton
             title="Log out"
             onClick={() => {
+              socket.disconnect();
               localStorage.clear("WeChatUser");
               props.history.replace("/auth");
             }}

@@ -247,6 +247,8 @@ export const ChatInput = styled.input`
   height: 100%;
   padding: 8px 10px;
   border: none;
+  font-size: 13px;
+  font-weight: 400;
   outline: none;
 `;
 
